@@ -5,11 +5,12 @@
 
 # Set default log file if no argument is provided
 LOGFILE=${1:-"sysbench_cpu_bare_metal.log"}
+INSTANCE_ID=${2:-0}  # Optional instance ID for logging
 NUM_RUNS=2  # Number of times to run the test
 TOTAL_TIME=0  # Variable to accumulate execution times
 
-echo "Running Sysbench CPU benchmark ($NUM_RUNS times)..."
-echo "Results will be saved in: $LOGFILE"
+# echo "Running Sysbench CPU benchmark ($NUM_RUNS times)..."
+# echo "Results will be saved in: $LOGFILE"
 
 # Loop to run the test multiple times
 for ((i=1; i<=NUM_RUNS; i++))
@@ -21,7 +22,7 @@ do
     EXEC_TIME=$(echo "$RESULT" | awk '{print $4}' | cut -d'/' -f1)
 
     # Print the extracted execution time for debugging
-    echo "Execution time extracted: $EXEC_TIME"
+    echo "Execution time for run $i: $EXEC_TIME"
 
     # Validate EXEC_TIME is a number
     if [[ ! "$EXEC_TIME" =~ ^[0-9]+\.[0-9]+$ ]]; then
@@ -42,8 +43,5 @@ done
 AVG_TIME=$(echo "scale=4; $TOTAL_TIME / $NUM_RUNS" | bc)
 
 # Save results to log file
-echo "Instance $INSTANCE_ID - Average Execution Time: $AVG_TIME seconds" >> "$LOGFILE"
-
-
-# Print final result
-echo "Test completed. Average execution time saved in $LOGFILE"
+# echo "Instance $INSTANCE_ID - Average Execution Time: $AVG_TIME seconds" >> "$LOGFILE"
+echo  "$AVG_TIME" >> "$LOGFILE"

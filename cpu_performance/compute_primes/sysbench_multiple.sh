@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Define instance counts to test
-INSTANCE_COUNTS=(1 8 32 128 256 512)
+INSTANCE_COUNTS=(1 2 4 8 16 32 128 256 512)
 NUM_RUNS=10  # Number of times to run each test
 
 # Ensure sysbench_single.sh is executable
@@ -72,7 +72,7 @@ for INSTANCE_COUNT in "${INSTANCE_COUNTS[@]}"; do
     SLOWDOWN=$(echo "scale=4; $BASELINE_EXEC_TIME/$AVERAGE_EXEC_TIME " | bc)
 
     # 3.4. Save to `bare_metal_result.log`**
-    echo "Instance $INSTANCE_COUNT - Slowdown: $SLOWDOWN" >> "$BARE_METAL_LOG"
+    echo "$INSTANCE_COUNT, $SLOWDOWN" >> "$BARE_METAL_LOG"
     echo "Instance $INSTANCE_COUNT - Slowdown: $SLOWDOWN"
 done
 

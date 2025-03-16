@@ -1,14 +1,15 @@
 #!/bin/bash
 
 # Script to compute the denominator for CPU metric: Execution time of Single instance on Bare-Metal.
-# .
 
-# Output file
-LOGFILE="sysbench_cpu_bare_metal.log"
-NUM_RUNS=10  # Number of times to run the test (reduce to 10 for testing)
+
+# Set default log file if no argument is provided
+LOGFILE=${1:-"sysbench_cpu_bare_metal.log"}
+NUM_RUNS=2  # Number of times to run the test
 TOTAL_TIME=0  # Variable to accumulate execution times
 
 echo "Running Sysbench CPU benchmark ($NUM_RUNS times)..."
+echo "Results will be saved in: $LOGFILE"
 
 # Loop to run the test multiple times
 for ((i=1; i<=NUM_RUNS; i++))
@@ -41,7 +42,8 @@ done
 AVG_TIME=$(echo "scale=4; $TOTAL_TIME / $NUM_RUNS" | bc)
 
 # Save results to log file
-echo "Average Execution Time after $NUM_RUNS runs: $AVG_TIME seconds" | tee -a "$LOGFILE"
+echo "Instance $INSTANCE_ID - Average Execution Time: $AVG_TIME seconds" >> "$LOGFILE"
+
 
 # Print final result
 echo "Test completed. Average execution time saved in $LOGFILE"

@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Define instance counts to test
-INSTANCE_COUNTS=(1 32 128 256)
+INSTANCE_COUNTS=(1 8 32 128 256 512)
 NUM_RUNS=10  # Number of times to run each test
 
 # Ensure sysbench_single.sh is executable

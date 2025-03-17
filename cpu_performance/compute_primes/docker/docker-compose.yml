@@ -4,4 +4,6 @@ services:
     build: .
     volumes:
       - .:/sysbench
-    command: ["/sysbench/sysbench_single.sh", "/sysbench/docker_instance.log"]
+    environment:
+      - INSTANCE_COUNT=${INSTANCE_COUNT}
+    entrypoint: ["/sysbench/sysbench_single.sh"]

@@ -1,0 +1,9 @@
+version: '3'
+services:
+  sysbench:
+    build: .
+    volumes:
+      - .:/sysbench
+    environment:
+      - INSTANCE_COUNT=${INSTANCE_COUNT}
+    entrypoint: ["/sysbench/sysbench_single.sh"]

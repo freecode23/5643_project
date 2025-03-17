@@ -11,9 +11,8 @@ sudo apt update
 sudo apt install sysbench -y
 ```
 
-
 ## 1. CPU performance
-### 1.1 Sysbench
+### 1.1 Computing Primes
 
 #### 1.1.1 Bare Metal
 Inside `compute_primes` directory run:
@@ -23,9 +22,22 @@ Inside `compute_primes` directory run:
 
 #### 1.1.2 Docker
 Inside `docker` directory and run:
+```
+./multiple.sh
+```
 
-docker-compose up --build --scale sysbench=5
 #### 1.1.3 K8s
+
+
+#### 1.1.4 Compute slowdown for all the three environemnts
+Inside `compute_primes` directory run:
+```
+./compute_slowdown.sh
+```
+
+
+
+### 1.2 Compression Algorithm
 
 
 

@@ -4,7 +4,7 @@
 
 
 INSTANCE_ID=${2:-0}  # Optional instance ID for logging
-NUM_RUNS=1  # Number of times to run the test
+NUM_RUNS=3  # Number of times to run the test
 TOTAL_TIME=0  # Variable to accumulate execution times
 
 
@@ -19,7 +19,7 @@ if [[ -z "$LOGFILE" ]]; then
     fi
 
     # Create filename based on INSTANCE_COUNT env variable.
-    LOGFILE="docker_${INSTANCE_COUNT}_instance.log"
+    LOGFILE="${INSTANCE_COUNT}_instance.log"
 
     # Clear log file if it exists
     > "$LOGFILE"
@@ -28,8 +28,8 @@ if [[ -z "$LOGFILE" ]]; then
 fi
 
 # 2. Run sysbench for NUM_RUNS of times.
-for ((i=1; i<=NUM_RUNS; i++))
-do
+for ((i=1; i<=NUM_RUNS; i++)); do
+
     # Run Sysbench and extract execution time correctly
     RESULT=$(sysbench cpu --cpu-max-prime=40000 --threads=1 run | grep "execution time (avg/stddev)")
 

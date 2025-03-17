@@ -2,14 +2,14 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 # File path for the log
-log_file = "bare_metal_result.log"
+bm_log_file = "./bare_metal/result.log"
 
 # Lists to store data
 instances = []
 slowdown = []
 
 # Read and parse the log file
-with open(log_file, "r") as file:
+with open(bm_log_file, "r") as file:
     for line in file:
         parts = line.strip().split(",")
         if len(parts) == 2:
@@ -36,7 +36,6 @@ plt.gca().grid(True, which="major", axis="x", linestyle="--", linewidth=0.7)  # 
 plt.legend()
 
 # Save the plot
-plt.savefig("bare_metal_result.png")
-plt.show()
+plt.savefig("result.png")
 
-print("Plot saved as bare_metal_result.png")
+print("Plot saved as result.png")

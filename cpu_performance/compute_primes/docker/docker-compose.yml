@@ -1,0 +1,7 @@
+version: '3'
+services:
+  sysbench:
+    build: .
+    volumes:
+      - .:/sysbench
+    command: ["/sysbench/sysbench_single.sh", "/sysbench/docker_instance.log"]

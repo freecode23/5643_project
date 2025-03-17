@@ -16,13 +16,13 @@ sudo apt install sysbench -y
 ### 1.1 Sysbench
 
 #### 1.1.1 Bare Metal
-Inside compute_primes directory run:
+Inside `compute_primes` directory run:
 ```
-./bare_metal/bm_multiple.sh
+./bare_metal/multiple.sh
 ```
 
 #### 1.1.2 Docker
-Navigate to the docker directory and run:
+Inside `docker` directory and run:
 
 docker-compose up --build --scale sysbench=5
 #### 1.1.3 K8s

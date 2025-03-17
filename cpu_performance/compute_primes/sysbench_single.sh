@@ -3,13 +3,31 @@
 # Script to compute the denominator for CPU metric: Execution time of Single instance on Bare-Metal.
 
 
-# Set default log file if no argument is provided
-LOGFILE=${1:-"default.log"}
 INSTANCE_ID=${2:-0}  # Optional instance ID for logging
 NUM_RUNS=1  # Number of times to run the test
 TOTAL_TIME=0  # Variable to accumulate execution times
 
-# Loop to run the test multiple times
+
+# 1. Make sure we have a logfile to log the result to.
+LOGFILE=${1:-""}
+# If LOGFILE is an empty string, we are in container environment.
+if [[ -z "$LOGFILE" ]]; then
+    # Check if INSTANCE_COUNT is set
+    if [[ -z "$INSTANCE_COUNT" ]]; then
+        echo "Error: INSTANCE_COUNT variable is missing! Ensure this script is run with the correct environment variables."
+        exit 1
+    fi
+
+    # Create filename based on INSTANCE_COUNT env variable.
+    LOGFILE="docker_${INSTANCE_COUNT}_instance.log"
+
+    # Clear log file if it exists
+    > "$LOGFILE"
+    
+    echo "No logfile provided. Using auto-generated logfile: $LOGFILE"
+fi
+
+# 2. Run sysbench for NUM_RUNS of times.
 for ((i=1; i<=NUM_RUNS; i++))
 do
     # Run Sysbench and extract execution time correctly
@@ -33,9 +51,8 @@ do
     fi
 done
 
-# Compute average execution time
+# 3. Compute average execution time.
 AVG_TIME=$(echo "scale=4; $TOTAL_TIME / $NUM_RUNS" | bc)
 
-# Save results to log file
-# echo "Instance $INSTANCE_ID - Average Execution Time: $AVG_TIME seconds" >> "$LOGFILE"
+# 4. Save results to log file
 echo  "$AVG_TIME" >> "$LOGFILE"

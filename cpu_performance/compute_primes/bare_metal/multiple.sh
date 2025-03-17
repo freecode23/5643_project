@@ -1,26 +1,14 @@
 #!/bin/bash
+# To be run from compute_primes dir.
 
-# Define instance counts to test
+
+SYSBENCH_SCRIPT="sysbench_single.sh"
+LOGFILE_PREFIX="bm"
 INSTANCE_COUNTS=(1 2 4 8 16 32 64 128 256 512)
-NUM_RUNS=10  # Number of times to run each test
 
-# Ensure sysbench_single.sh is executable
-# Define paths
-SCRIPT_DIR="$(dirname "$(realpath "$0")")"  # Get current script directory
-PARENT_DIR="$(dirname "$SCRIPT_DIR")"  # Go one level up
-SYSBENCH_SCRIPT="$PARENT_DIR/sysbench_single.sh"  # Path to sysbench_single.sh
-
-FILE_PREFIX="bm"
-echo "Running Sysbench CPU benchmark for multiple instance counts..."
-
-
-# -----------------------------------------
 # Run sysbench with X number of instances and log the execution time for each of the instance.
-# -----------------------------------------
-
-# Loop through each instance count
 for INSTANCE_COUNT in "${INSTANCE_COUNTS[@]}"; do
-    LOGFILE="./bare_metal/${FILE_PREFIX}_${INSTANCE_COUNT}_instance.log"
+    LOGFILE="./bare_metal/${LOGFILE_PREFIX}_${INSTANCE_COUNT}_instance.log"
     echo -e "\n\nRunning Sysbench with ${INSTANCE_COUNT} concurrent instance(s)... Logfile: $LOGFILE"
 
     # Clear log file if it exists
@@ -28,7 +16,7 @@ for INSTANCE_COUNT in "${INSTANCE_COUNTS[@]}"; do
     
     # Start multiple sysbench_single.sh instances in parallel
     for ((i=1; i<=INSTANCE_COUNT; i++)); do
-        ./sysbench_single.sh "$LOGFILE" "$i" &  # Pass instance ID
+        ./${SYSBENCH_SCRIPT} "$LOGFILE" "$i" &  # Pass instance ID
     done
 
     # Wait for all instances of the current test to finish before moving to the next
@@ -37,19 +25,19 @@ for INSTANCE_COUNT in "${INSTANCE_COUNTS[@]}"; do
     echo "Completed Sysbench with ${INSTANCE_COUNT} concurrent instance(s). Moving to the next..."
 done
 
-echo "Test completed. Logs saved in ${FILE_PREFIX}_*_instance.log files."
+echo "Test completed. Logs saved in ${LOGFILE_PREFIX}_*_instance.log files."
 
 # -----------------------------------------
-# Calculate Slowdown and Save to `result.log`**
+# Calculate Slowdown and Save to RESULT_FILE
 # -----------------------------------------
 
-BARE_METAL_LOG="./bare_metal/result.log"
+RESULT_FILE="./bare_metal/result.log"
 
-# 1. Create or Clear `result.log`**
-> "$BARE_METAL_LOG"
+# 1. Create or Clear RESULT_FILE
+> "$RESULT_FILE"
 
 # 2. Read the baseline execution time from a single instance
-BASELINE_EXEC_TIME=$(head -n 1 "./bare_metal/${FILE_PREFIX}_1_instance.log")
+BASELINE_EXEC_TIME=$(head -n 1 "./bare_metal/${LOGFILE_PREFIX}_1_instance.log")
 
 if [[ ! "$BASELINE_EXEC_TIME" =~ ^[0-9]+\.[0-9]+$ ]]; then
     echo "Error: Invalid baseline execution time in bm_1_instance.log"
@@ -58,26 +46,25 @@ fi
 
 echo "Baseline Execution Time: $BASELINE_EXEC_TIME seconds"
 
-# Compute Slowdown for Each Instance Count**
+# Compute Slowdown for Each Instance Count
 for INSTANCE_COUNT in "${INSTANCE_COUNTS[@]}"; do
     LOGFILE="./bare_metal/bm_${INSTANCE_COUNT}_instance.log"
 
-    # 3.1. Ensure the log file exists**
+    # 3.1. Ensure the log file exists
     if [[ ! -f "$LOGFILE" ]]; then
         echo "Warning: Log file $LOGFILE not found. Skipping..."
         continue
     fi
 
-    # 3.2. Compute the average execution time**
+    # 3.2. Compute the average execution time
     TOTAL_EXEC_TIME=$(awk '{sum += $1} END {print sum}' "$LOGFILE")
     AVERAGE_EXEC_TIME=$(echo "scale=4; $TOTAL_EXEC_TIME / $INSTANCE_COUNT" | bc)
 
-    # 3.3. Compute the slowdown**
+    # 3.3. Compute the slowdown
     SLOWDOWN=$(echo "scale=4; $BASELINE_EXEC_TIME/$AVERAGE_EXEC_TIME " | bc)
 
-    # 3.4. Save to `bm_result.log`**
-    echo "$INSTANCE_COUNT, $SLOWDOWN" >> "$BARE_METAL_LOG"
+    # 3.4. Save to RESULT_FILE
+    echo "$INSTANCE_COUNT, $SLOWDOWN" >> "$RESULT_FILE"
     echo "Instance $INSTANCE_COUNT - Slowdown: $SLOWDOWN"
 done
 
-echo "✅ Slowdown results saved in $BARE_METAL_LOG"

@@ -3,7 +3,7 @@
 
 
 SYSBENCH_SCRIPT="sysbench_single.sh"
-INSTANCE_COUNTS=(1 2 4 8 16 32 64 128 256 512)
+INSTANCE_COUNTS=(1 2 4 8 16 32 64 128 256)
 
 # Run sysbench with X number of instances and log the execution time for each of the instance.
 for INSTANCE_COUNT in "${INSTANCE_COUNTS[@]}"; do

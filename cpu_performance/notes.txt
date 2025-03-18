@@ -1,10 +1,6 @@
 TODO:
+compute primes.
+1. Test 512 docker.
+2. K8s
 
-1. Make sure bare metal still runs correctly
-2. move # -----------------------------------------
-# Calculate Slowdown and Save to RESULT_FILE
-# -----------------------------------------
 
-from bare_metal's multiple.sh 1 dir up, so it can be used for bare_metal and docker 
-
-3. Update plot_result.py so it can plot both baremetal and docker

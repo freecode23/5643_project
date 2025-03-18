@@ -1,7 +1,8 @@
 #!/bin/bash
 
+# -----------------------------------------
 # Script to compute average execution time of Single instance by running sysbench for multiple runs.
-
+# -----------------------------------------
 
 INSTANCE_ID=${2:-0}  # Optional instance ID for logging
 NUM_RUNS=10 # Number of times to run the test

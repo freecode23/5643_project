@@ -1,7 +1,10 @@
 #!/bin/bash
 
 SYSBENCH_SCRIPT="sysbench_single.sh"
-INSTANCE_COUNTS=(1 2 4 8 16 32 64 128 256 512)
+INSTANCE_COUNTS=( 512)
+
+# Set Docker timeout to 5 minutes
+export COMPOSE_HTTP_TIMEOUT=300
 
 # 1. Copy sysbench_single.sh from parent directory to current directory
 cp ../${SYSBENCH_SCRIPT} .

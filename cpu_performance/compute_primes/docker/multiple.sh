@@ -1,7 +1,7 @@
 #!/bin/bash
 
 SYSBENCH_SCRIPT="sysbench_single.sh"
-INSTANCE_COUNTS=(1 2 4)
+INSTANCE_COUNTS=(1 2 4 8)
 
 # 1. Copy sysbench_single.sh from parent directory to current directory
 cp ../${SYSBENCH_SCRIPT} .

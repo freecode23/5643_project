@@ -2,7 +2,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 # Define environment types
-ENV_TYPES = ["bare_metal", "docker"]
+ENV_TYPES = ["bare_metal", "docker", "k8s"]
 slowdown_file = "slowdown.log"
 
 # Create the plot

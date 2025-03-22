@@ -22,9 +22,6 @@ if [[ -z "$LOGFILE" ]]; then
     # 1.2 Create filename based on INSTANCE_COUNT env variable.
     LOGFILE="${INSTANCE_COUNT}_instance.log"
 
-    # 1.3 Clear log file if it exists
-    > "$LOGFILE"
-    
     echo "No logfile provided. Using auto-generated logfile: $LOGFILE"
 fi
 
@@ -55,5 +52,9 @@ done
 # 3. Compute average execution time.
 AVG_TIME=$(echo "scale=4; $TOTAL_TIME / $NUM_RUNS" | bc)
 
-# 4. Save results to log file
-echo  "$AVG_TIME" >> "$LOGFILE"
+# 4. Append results to the shared log file using `flock`
+exec 200>/sysbench/log.lock  # Open lock file for writing
+flock -x 200                 # Acquire exclusive lock
+echo "$AVG_TIME" >> "$LOGFILE"
+flock -u 200                 # Release lock
+exec 200>&-                  # Close lock file

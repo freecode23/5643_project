@@ -1,11 +1,10 @@
 TODO:
-compute primes.
-1. redo instances 64-128-256
-2. update plot_result.py to include k8s dir
+Compute Primes:
+2. Run ./compute_slowdownplot_result.pyresult.py
 
 
 Compute Primes Notes:
-k8s compute primes are not running simultanoesly:
+1) k8s compute primes are not running simultanoesly:
 kubectl get pods --selector=job-name=sysbench-job-256 --no-headers | awk '{print $3}' | sort | uniq -c
     190 Completed
      36 ContainerCreating
@@ -15,3 +14,5 @@ kubectl get pods --selector=job-name=sysbench-job-256 --no-headers | awk '{print
     > "$LOGFILE"
     
 So maybe worth adding overall completion (all containers) and also make comparison
+
+2)

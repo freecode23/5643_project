@@ -1,9 +1,9 @@
 #!/bin/bash
 # To be run from compute_primes dir.
 
-
 SYSBENCH_SCRIPT="sysbench_single.sh"
 INSTANCE_COUNTS=(1 2 4 8 16 32 64 128 256)
+sudo chown -R $USER:$USER .
 
 # Run sysbench with X number of instances and log the execution time for each of the instance.
 for INSTANCE_COUNT in "${INSTANCE_COUNTS[@]}"; do
@@ -25,3 +25,6 @@ for INSTANCE_COUNT in "${INSTANCE_COUNTS[@]}"; do
 done
 
 echo "Test completed. Logs saved in _*_instance.log files."
+
+# Clean up.
+rm ./bare_metal/log.lock

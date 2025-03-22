@@ -11,6 +11,7 @@ TOTAL_TIME=0  # Variable to accumulate execution times
 
 # 1. Make sure we have a logfile to log the result to.
 LOGFILE=${1:-""}
+LOGLOCK_FILE="./bare_metal/log.lock"
 # If LOGFILE is an empty string, we are in container environment.
 if [[ -z "$LOGFILE" ]]; then
     # 1.1 Check if INSTANCE_COUNT is set
@@ -21,6 +22,7 @@ if [[ -z "$LOGFILE" ]]; then
 
     # 1.2 Create filename based on INSTANCE_COUNT env variable.
     LOGFILE="${INSTANCE_COUNT}_instance.log"
+    LOGLOCK_FILE="/sysbench/log.lock"
 
     echo "No logfile provided. Using auto-generated logfile: $LOGFILE"
 fi
@@ -53,7 +55,7 @@ done
 AVG_TIME=$(echo "scale=4; $TOTAL_TIME / $NUM_RUNS" | bc)
 
 # 4. Append results to the shared log file using `flock`
-exec 200>/sysbench/log.lock  # Open lock file for writing
+exec 200> "$LOGLOCK_FILE"    # Open lock file for writing
 flock -x 200                 # Acquire exclusive lock
 echo "$AVG_TIME" >> "$LOGFILE"
 flock -u 200                 # Release lock

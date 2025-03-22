@@ -3,7 +3,8 @@
 # This script should be executed inside k8s directory.
 # -----------------------------------------
 INSTANCE_COUNTS=(1 2 4 8 16 32 64 128 256)
-INSTANCE_COUNTS=(128)
+INSTANCE_COUNTS=(256)
+sudo chown -R $USER:$USER .
 
 # -----------------------------------------
 # 1. Copy required files to k8s directory
@@ -75,4 +76,5 @@ minikube delete
 rm temp-job.yaml
 rm ./${SYSBENCH_SCRIPT}
 rm ./${DOCKERFILE}
+rm ./log.lock
 

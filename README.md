@@ -1,49 +1,100 @@
-# 5643_project
-CPU and File I/O Performance across Bare Metal, Docker, K8s 
+# 5643 Project
+## CPU and File I/O Performance across Bare Metal, Docker, and Kubernetes
 
-https://github.com/akopytov/sysbench
+This project evaluates CPU and File I/O performance across different environments: **Bare Metal, Docker, and Kubernetes (K8s)** using [Sysbench](https://github.com/akopytov/sysbench).
 
-# Prerequisites
+---
 
-Install Sysbench
+## 0. Prerequisites
+Ensure the following dependencies are installed before running the experiments.
+
+### 0.1 Install Sysbench
 ```
 sudo apt update
 sudo apt install sysbench -y
 ```
 
-## 1. CPU performance
-### 1.1 Computing Primes
+### 0.2 Install Minikube
+```
+curl -LO https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64
+sudo install minikube-linux-amd64 /usr/local/bin/minikube
+```
 
-#### 1.1.1 Bare Metal
+Verify installation:
+```
+minikube version
+```
+
+### 0.3 Install Kubectl
+```
+sudo apt update
+sudo apt install -y curl
+curl -LO "https://dl.k8s.io/release/$(curl -Ls https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+chmod +x kubectl
+sudo mv kubectl /usr/local/bin/
+```
+
+Verify installation:
+```
+kubectl version --client
+```
+
+---
+
+## 1. CPU Performance Evaluation
+
+### 1.1 Computing Primes Performance
+
+#### 1.1.1 Bare Metal Execution
 Inside `compute_primes` directory run:
 ```
 ./bare_metal/multiple.sh
 ```
 
-#### 1.1.2 Docker
-Inside `docker` directory and run:
+#### 1.1.2 Docker Execution
+Inside `docker` directory run:
 ```
 ./multiple.sh
 ```
 
-#### 1.1.3 K8s
+#### 1.1.3 Kubernetes (Minikube) Execution
+Inside `k8s` directory run:
+```
+./multiple.sh
+```
 
-
-#### 1.1.4 Compute slowdown for all the three environemnts
+#### 1.1.4 Compute Slowdown and Plot Result
 Inside `compute_primes` directory run:
 ```
 ./compute_slowdown.sh
 ```
 
-
-
+---
 ### 1.2 Compression Algorithm
+---
+#### 1.2.2 Docker Execution
+Inside `docker` directory run:
+```
+./multiple.sh
+```
+
+---
+
+### 2. File IO Performances
 
 
+---
 
 
+#### 2.2.2 Docker Execution
+Inside `docker` directory run:
+```
+./multiple.sh
+```
 
 ## References
-CPU sysbench:
-https://ieeexplore.ieee.org/stamp/stamp.jsp?tp=&arnumber=7371699
+Sysbench:  
+https://github.com/akopytov/sysbench
 
+IEEE paper for computing Primes using Sysbench:  
+https://ieeexplore.ieee.org/stamp/stamp.jsp?tp=&arnumber=7371699

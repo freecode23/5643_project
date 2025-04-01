@@ -1,8 +1,11 @@
 #!/bin/bash
 
-SYSBENCH_SCRIPT="sysbench_single.sh"
 INSTANCE_COUNTS=(1 2 4 8 16 32 64 128 256)
 sudo chown -R $USER:$USER .
+
+SYSBENCH_SCRIPT="sysbench_single.sh"
+TOTAL_LOGFILE="./start_end_per_instance.log"
+> "$TOTAL_LOGFILE"
 
 # Reset Docker environment back to the local system Docker daemon
 eval $(minikube docker-env --unset)
@@ -20,6 +23,9 @@ for INSTANCE_COUNT_ARG in "${INSTANCE_COUNTS[@]}"; do
     # Clear logfile if exists
     LOGFILE="${INSTANCE_COUNT_ARG}_instance.log"
     > "$LOGFILE"
+
+    # Record start time
+    START_EPOCH=$(date +%s)
 
     # Run multiple containers using compose.
     INSTANCE_COUNT=${INSTANCE_COUNT_ARG} docker compose up --build --scale sysbench=${INSTANCE_COUNT_ARG}

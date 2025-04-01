@@ -8,7 +8,8 @@
 # -----------------------------------------
 # Read the baseline execution time from a single instance in bare metal.
 # -----------------------------------------
-BASELINE_EXEC_TIME=$(head -n 1 "./bare_metal/1_instance.log")
+# Read the first field (execution time) from the first line
+BASELINE_EXEC_TIME=$(cut -d',' -f1 < ./bare_metal/1_instance.log)
 if [[ ! "$BASELINE_EXEC_TIME" =~ ^[0-9]+\.[0-9]+$ ]]; then
     echo "Error: Invalid baseline execution time in 1_instance.log"
     exit 1

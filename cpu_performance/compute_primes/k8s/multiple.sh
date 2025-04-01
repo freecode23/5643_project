@@ -22,6 +22,7 @@ cp ../docker/${DOCKERFILE} .
 # 2. Minikube set up.
 # -----------------------------------------
 minikube start --memory=6656 --cpus=4
+# minikube start --nodes=4 ---memory=6656 --cpus=4
 
 # 2.1 Point shell to Minikube's Docker daemon
 eval $(minikube docker-env)

@@ -62,7 +62,7 @@ plt.savefig("slowdown.png")
 # Plot 3 figures in 1 image. Place them side by side.
 # -----------------------------------------
 LOG_FILENAME = "256_instance.log"
-ENV_TYPES = ["bare_metal", "k8s"]
+
 
 # Set up a horizontal layout for 3 subplots
 fig, axes = plt.subplots(1, 3, figsize=(18, 10), sharey=True)

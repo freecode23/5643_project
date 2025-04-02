@@ -1,9 +1,6 @@
 TODO:
 Compute Primes:
-1. Try: k8s vm-driver none (new dir)
-2. Try: compute total time taken for each N instances save as total_per_instance_count.log in each folder
-3. Try: Anymethod to check level of concurrency i.e. monitor how many instances executed a any single time?
-4. Try: Multinode cluster.
+4. Try: kind multiple nodes.
 
 Compute Primes Notes:
 1) k8s compute primes are not running simultanoesly:
@@ -17,4 +14,4 @@ kubectl get pods --selector=job-name=sysbench-job-256 --no-headers | awk '{print
 So maybe worth adding overall completion (all containers) and also make comparison
 
 2)
-
+kubectl get pods -o wide

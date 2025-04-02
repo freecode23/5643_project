@@ -19,11 +19,11 @@ spec:
             - name: INSTANCE_COUNT
               value: "1"  # Placeholder, updated dynamically
           volumeMounts:
-            - name: sysbench-storage
-              mountPath: /sysbench  # where inside the container.
+            - mountPath: /sysbench # where inside the container
+              name: log-volume
           command: ["/bin/bash", "-c", "/sysbench/sysbench_single.sh"]
       volumes:
-        - name: sysbench-storage
+        - name: log-volume
           hostPath:
-            path: "/host-mnt/sysbench" # where inside Minikube VM.
+            path: /mnt/logs # where inside the Kind node.
             type: Directory

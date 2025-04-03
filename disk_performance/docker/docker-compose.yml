@@ -1,0 +1,13 @@
+services:
+  sysbench:
+    build: .
+    volumes:
+      - .:/sysbench
+    environment:
+      - INSTANCE_COUNT=${INSTANCE_COUNT}
+      - SYSBENCH_WORK_DIR=/sysbench/results
+    working_dir: /sysbench
+    entrypoint:  
+    bash -c '
+      INSTANCE_ID=$(hostname | grep -o "[0-9]*$");
+      ./sysbench_single.sh ./results/${INSTANCE_COUNT}_instance.log $INSTANCE_ID

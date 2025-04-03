@@ -1,0 +1,6 @@
+TODO:
+Compute Primes:
+1. Try: Redo all envs, 10 runs, minikube, kind, recreate slowdown
+2. Try: multiple nodes: kind, compare time and concurrency
+
+https://betterstack.com/community/guides/scaling-docker/minikube-vs-kubernetes/

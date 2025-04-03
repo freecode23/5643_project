@@ -1,0 +1,29 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: sysbench-job
+spec:
+  completions: 1  # Placeholder, updated dynamically
+  parallelism: 1  # Placeholder, updated dynamically
+  template:
+    metadata:
+      labels:
+        app: sysbench
+    spec:
+      restartPolicy: Never
+      containers:
+        - name: sysbench
+          image: sysbench-container:latest
+          imagePullPolicy: Never
+          env:
+            - name: INSTANCE_COUNT
+              value: "1"  # Placeholder, updated dynamically
+          volumeMounts:
+            - mountPath: /sysbench # where inside the container
+              name: log-volume
+          command: ["/bin/bash", "-c", "/sysbench/sysbench_single.sh"]
+      volumes:
+        - name: log-volume
+          hostPath:
+            path: /mnt/logs # where inside the Kind node.
+            type: Directory

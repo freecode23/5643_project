@@ -6,7 +6,7 @@ import os
 
 # Define environment types
 # ENV_TYPES = ["bare_metal", "docker", "k8s", "kind"]
-ENV_TYPES = ["bare_metal", "docker", "k8s", "kind"]
+ENV_TYPES = ["bare_metal", "docker", "minikube", "kind"]
 
 # -----------------------------------------
 # Create the Slowdown factor plot

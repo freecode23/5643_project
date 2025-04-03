@@ -39,6 +39,9 @@ Verify installation:
 kubectl version --client
 ```
 
+### 0.4 Install Kind
+https://kind.sigs.k8s.io/docs/user/quick-start/#installation
+
 ---
 
 ## 1. CPU Performance Evaluation
@@ -46,7 +49,7 @@ kubectl version --client
 ### 1.1 Computing Primes Performance
 
 #### 1.1.1 Bare Metal Execution
-Inside `compute_primes` directory run:
+Inside `cpu_performance` directory run:
 ```
 ./bare_metal/multiple.sh
 ```
@@ -58,27 +61,19 @@ Inside `docker` directory run:
 ```
 
 #### 1.1.3 Kubernetes (Minikube) Execution
-Inside `k8s` directory run:
+Inside `minikube` and `kind` directory run:
 ```
 ./multiple.sh
 ```
 
 #### 1.1.4 Compute Slowdown and Plot Result
-Inside `compute_primes` directory run:
+Inside `cpu_performance` directory run:
 ```
 ./compute_slowdown.sh
 ```
 
 ---
-### 1.2 Compression Algorithm
----
-#### 1.2.2 Docker Execution
-Inside `docker` directory run:
-```
-./multiple.sh
-```
 
----
 
 ### 2. File IO Performances
 

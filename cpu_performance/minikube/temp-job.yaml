@@ -1,10 +1,10 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: sysbench-job-256
+  name: sysbench-job-16
 spec:
-  completions: 256  # Placeholder, updated dynamically
-  parallelism: 256  # Placeholder, updated dynamically
+  completions: 16  # Placeholder, updated dynamically
+  parallelism: 16  # Placeholder, updated dynamically
   template:
     metadata:
       labels:
@@ -17,13 +17,13 @@ spec:
           imagePullPolicy: Never
           env:
             - name: INSTANCE_COUNT
-              value: "256"  # Placeholder, updated dynamically
+              value: "16"  # Placeholder, updated dynamically
           volumeMounts:
-            - mountPath: /sysbench # where inside the container
-              name: log-volume
+            - name: sysbench-storage
+              mountPath: /sysbench  # where inside the container.
           command: ["/bin/bash", "-c", "/sysbench/sysbench_single.sh"]
       volumes:
-        - name: log-volume
+        - name: sysbench-storage
           hostPath:
-            path: /mnt/logs # where inside the Kind node.
+            path: "/host-mnt/sysbench" # where inside Minikube VM.
             type: Directory

@@ -10,7 +10,3 @@ nodes:
     extraMounts:
       - hostPath: ./
         containerPath: /mnt/logs
-  # - role: worker # worker2
-  #   extraMounts:
-  #     - hostPath: ./
-  #       containerPath: /mnt/logs

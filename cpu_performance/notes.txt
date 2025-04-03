@@ -1,17 +1,6 @@
 TODO:
 Compute Primes:
-4. Try: kind multiple nodes.
+1. Try: Redo all envs, 10 runs, minikube, kind, recreate slowdown
+2. Try: multiple nodes: kind, compare time and concurrency
 
-Compute Primes Notes:
-1) k8s compute primes are not running simultanoesly:
-kubectl get pods --selector=job-name=sysbench-job-256 --no-headers | awk '{print $3}' | sort | uniq -c
-    190 Completed
-     36 ContainerCreating
-      9 Pending
-     21 Running
-
-    
-So maybe worth adding overall completion (all containers) and also make comparison
-
-2)
-kubectl get pods -o wide
+https://betterstack.com/community/guides/scaling-docker/minikube-vs-kubernetes/

@@ -1,13 +1,13 @@
 #!/bin/bash
 # -----------------------------------------
-# This script should be executed inside kind directory.
+# This script should be executed inside k8s directory.
 # -----------------------------------------
-INSTANCE_COUNTS=(256)
+INSTANCE_COUNTS=(1 2 4 8 16 32 64 128 256)
 
 sudo chown -R $USER:$USER .
 
 # -----------------------------------------
-# 1. Copy required files to current directory
+# 1. Copy required files to k8s directory
 # -----------------------------------------
 SYSBENCH_SCRIPT="sysbench_single.sh"
 DOCKERFILE="Dockerfile"
@@ -18,16 +18,29 @@ cp ../${SYSBENCH_SCRIPT} .
 cp ../docker/${DOCKERFILE} .
 
 # -----------------------------------------
-# 2. Set up Kind cluster
+# 2. Minikube set up.
 # -----------------------------------------
-kind delete cluster  # Optional: cleanup before recreate
-kind create cluster --config kind-config.yaml
+minikube start --memory=6656 --cpus=4
+
+# 2.1 Point shell to Minikube's Docker daemon
+eval $(minikube docker-env)
+
+# 2.2 Build image inside Minikube
 docker build -t sysbench-container:latest .
-kind load docker-image sysbench-container:latest
+
+# 2.3 Get absolute path and mount path in Minikbe VM.
+LOCAL_PATH=$(pwd)
+MOUNT_PATH="/host-mnt/sysbench"
+
+# 2.4 Start the Minikube mount in the background
+minikube mount "$LOCAL_PATH:$MOUNT_PATH" --uid 0 --gid 0 &
+MOUNT_PID=$!
 
 # -----------------------------------------
-# 3. Create Kubernetes jobs for each instance count
+# 3. Create kubernetes job with x number of instances or pod.
 # -----------------------------------------
+
+# Loop through different instance counts and create Jobs dynamically
 for INSTANCE_COUNT in "${INSTANCE_COUNTS[@]}"; do
     JOB_NAME="sysbench-job-${INSTANCE_COUNT}"
     echo "Launching Kubernetes Job: ${JOB_NAME} with ${INSTANCE_COUNT} instances"
@@ -65,12 +78,18 @@ for INSTANCE_COUNT in "${INSTANCE_COUNTS[@]}"; do
     echo "${INSTANCE_COUNT},${DURATION}" >> "$TOTAL_LOGFILE"
 done
 
+
 # -----------------------------------------
 # 4. Clean up
 # -----------------------------------------
+minikube stop
+minikube delete
+kill $MOUNT_PID
+
 kubectl delete jobs --all
 kubectl delete pods --all
 rm temp-job.yaml
 rm ./${SYSBENCH_SCRIPT}
 rm ./${DOCKERFILE}
 rm ./log.lock
+

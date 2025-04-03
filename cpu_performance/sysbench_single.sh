@@ -5,7 +5,7 @@
 # -----------------------------------------
 
 INSTANCE_ID=${2:-0}  # Optional instance ID for logging
-NUM_RUNS=2 # Number of times to run the test
+NUM_RUNS=10 # Number of times to run the test
 TOTAL_TIME=0  # Variable to accumulate execution times
 
 

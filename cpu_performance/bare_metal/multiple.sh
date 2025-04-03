@@ -3,7 +3,6 @@
 
 SYSBENCH_SCRIPT="sysbench_single.sh"
 INSTANCE_COUNTS=(1 2 4 8 16 32 64 128 256)
-INSTANCE_COUNTS=(1 2 4 256)
 
 LOG_DIR="./bare_metal"
 TOTAL_LOGFILE="$LOG_DIR/start_end_per_instance.log"

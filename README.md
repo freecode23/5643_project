@@ -46,30 +46,30 @@ https://kind.sigs.k8s.io/docs/user/quick-start/#installation
 
 ## 1. CPU Performance Evaluation
 
-### 1.1 Computing Primes Performance
+### 1 Computing Primes Performance
 
-#### 1.1.1 Bare Metal Execution
+#### 1.1 Bare Metal Execution
 Inside `cpu_performance` directory run:
 ```
 ./bare_metal/multiple.sh
 ```
 
-#### 1.1.2 Docker Execution
+#### 1.2 Docker Execution
 Inside `docker` directory run:
 ```
 ./multiple.sh
 ```
 
-#### 1.1.3 Kubernetes (Minikube) Execution
+#### 1.3 Kubernetes (Minikube and Kind) Execution
 Inside `minikube` and `kind` directory run:
 ```
 ./multiple.sh
 ```
 
-#### 1.1.4 Compute Slowdown and Plot Result
+#### 1.4 Compute Slowdown and Plot Result
 Inside `cpu_performance` directory run:
 ```
-./compute_slowdown.sh
+./compute_result.sh
 ```
 
 ---

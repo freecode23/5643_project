@@ -21,7 +21,7 @@ fi
 # -----------------------------------------
 
 # Make sure there is "x_instance.log" in the directories in ENV_TYPES
-ENV_TYPES=("bare_metal" "docker" "k8s")
+ENV_TYPES=("bare_metal" "docker" "minikube" "kind")
 INSTANCE_COUNTS=(1 2 4 8 16 32 64 128 256)
 
 for ENV_TYPE in "${ENV_TYPES[@]}"; do

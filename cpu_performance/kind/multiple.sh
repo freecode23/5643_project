@@ -3,7 +3,6 @@
 # This script should be executed inside kind directory.
 # -----------------------------------------
 INSTANCE_COUNTS=(1 2 4 8 16 32 64 128 256)
-INSTANCE_COUNTS=(128)
 
 
 sudo chown -R $USER:$USER .

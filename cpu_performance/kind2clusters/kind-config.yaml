@@ -1,0 +1,16 @@
+# kind-config.yaml
+kind: Cluster
+apiVersion: kind.x-k8s.io/v1alpha4
+name: kind-cluster2
+nodes:
+  - role: control-plane
+    extraMounts:
+      - hostPath: ./
+        containerPath: /mnt/logs
+    extraPortMappings:
+      - containerPort: 6443
+        hostPort: 6445  # 👈 Different port than default 6443
+  - role: worker # worker1
+    extraMounts:
+      - hostPath: ./
+        containerPath: /mnt/logs

@@ -1,7 +1,7 @@
 TODO:
 Compute Primes:
 1. Try: Redo all envs, 10 runs, minikube, kind, recreate slowdown
-2. Try: 2 clusters: 1 node each: 128 jobs each.
+2. Try: 2 clusters: 1 node each: 128 jobs each. --> 350 seconds
 
 
 https://betterstack.com/community/guides/scaling-docker/minikube-vs-kubernetes/

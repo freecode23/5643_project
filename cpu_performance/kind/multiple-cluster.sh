@@ -11,12 +11,11 @@ sudo chown -R $USER:$USER .
 # -----------------------------------------
 # 1. Copy required files to current directory
 # -----------------------------------------
-SYSBENCH_SCRIPT="sysbench_single.sh"
+SYSBENCH_SCRIPT="./sysbench_single.sh"
 DOCKERFILE="Dockerfile"
 TOTAL_LOGFILE="./start_end_per_instance.log"
 > "$TOTAL_LOGFILE"
 
-cp ../${SYSBENCH_SCRIPT} .
 cp ../docker/${DOCKERFILE} .
 
 # -----------------------------------------
@@ -35,7 +34,7 @@ for INSTANCE_COUNT in "${INSTANCE_COUNTS[@]}"; do
     echo "Launching Kubernetes Job: ${JOB_NAME} with ${INSTANCE_COUNT} instances"
 
     # 3.0 Clear log file if it exists
-    LOGFILE="./${INSTANCE_COUNT}_instance.log"
+    LOGFILE="./${INSTANCE_COUNT}_cluster.log"
     > "$LOGFILE"
 
     # 3.1 Delete the job if it already exists (suppress errors if not found)
@@ -73,6 +72,5 @@ done
 kubectl delete jobs --all
 kubectl delete pods --all
 rm temp-job.yaml
-rm ./${SYSBENCH_SCRIPT}
 rm ./${DOCKERFILE}
 rm ./log.lock

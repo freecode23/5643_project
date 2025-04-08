@@ -9,7 +9,7 @@
 # Read the baseline execution time from a single instance in bare metal.
 # -----------------------------------------
 # Read the first field (execution time) from the first line
-BASELINE_MBPS=$(cut -d',' -f1 < ./bare_metal/1_instance.log)
+BASELINE_MBPS=$(cut -d',' -f1 < ./bare_metal/results/1_instance.log)
 if [[ ! "$BASELINE_MBPS" =~ ^[0-9]+\.[0-9]+$ ]]; then
     echo "Error: Invalid baseline MB/S in 1_instance.log"
     exit 1
@@ -21,20 +21,20 @@ fi
 # -----------------------------------------
 
 # Make sure there is "x_instance.log" in the directories in ENV_TYPES
-ENV_TYPES=("bare_metal" "docker" "k8s")
+ENV_TYPES=("bare_metal" "docker" "minikube" "kind" "pvc-kind")
 INSTANCE_COUNTS=(1 2 4 8 16 32 64 128 256)
 
 for ENV_TYPE in "${ENV_TYPES[@]}"; do
     # 0. Define path for the result of slowdown for each environment.
-    RESULT_FILE="./${ENV_TYPE}/relative_throughput.log"
-
+    RESULT_FILE="./${ENV_TYPE}/results/relative_throughput.log"
+    mkdir -p "$(dirname "$RESULT_FILE")"
     # 1. Create or clear RESULT_FILE
     > "$RESULT_FILE"
 
     # 2. Compute slowdown for each instance count
     echo -e "\n\n${ENV_TYPE}:"
     for INSTANCE_COUNT in "${INSTANCE_COUNTS[@]}"; do
-        LOGFILE="./${ENV_TYPE}/${INSTANCE_COUNT}_instance.log"
+        LOGFILE="./${ENV_TYPE}/results/${INSTANCE_COUNT}_instance.log"
 
         # 2.1. Ensure the execution time log file exists
         if [[ ! -f "$LOGFILE" ]]; then

@@ -19,7 +19,7 @@ cp ../${SYSBENCH_SCRIPT} .
 # 2. Run sysbench with X number of docker instances and log the execution time for each of the instance.
 # Loop through each instance count
 for INSTANCE_COUNT_ARG in "${INSTANCE_COUNTS[@]}"; do
-
+    export INSTANCE_COUNT=${INSTANCE_COUNT_ARG}
     # Clear logfile if exists
     LOGFILE="${INSTANCE_COUNT_ARG}_instance.log"
     > "$LOGFILE"
@@ -28,7 +28,15 @@ for INSTANCE_COUNT_ARG in "${INSTANCE_COUNTS[@]}"; do
     START_EPOCH=$(date +%s)
 
     # Run multiple containers using compose.
-    INSTANCE_COUNT=${INSTANCE_COUNT_ARG} docker compose up --build --scale sysbench=${INSTANCE_COUNT_ARG}
+    INSTANCE_COUNT=${INSTANCE_COUNT_ARG} 
+    docker compose up --build --scale sysbench=${INSTANCE_COUNT_ARG}
+
+    # Stop and clean up containers
+    docker compose down
+
+    # Record end time
+    END_EPOCH=$(date +%s)
+    DURATION=$((END_EPOCH - START_EPOCH))
 done
 
 # 3. Clean up.

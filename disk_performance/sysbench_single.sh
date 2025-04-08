@@ -9,23 +9,27 @@ NUM_RUNS=5 # Number of times to run the test (less to reduce excessive disk stre
 TOTAL_MBPS=0  # Variable for disk speed in MBPS
 
 
-# 1. Make sure we have a logfile to log the result to.
-LOCKFILE="$(realpath ./bare_metal/log.lock)"
-LOGFILE="$(realpath ./bare_metal/${INSTANCE_COUNT}_instance.log)"
-# If LOGFILE is an empty string, we are in container environment.
-if [[ -z "$LOGFILE" ]]; then
-    # 1.1 Check if INSTANCE_COUNT is set
+# 1. Determine LOGFILE and LOCKFILE based on context
+if [[ -z "$1" ]]; then
     if [[ -z "$INSTANCE_COUNT" ]]; then
         echo "Error: INSTANCE_COUNT variable is missing! Ensure this script is run with the correct environment variables."
         exit 1
     fi
-
-    # 1.2 Create filename based on INSTANCE_COUNT env variable.
-    LOGFILE="${INSTANCE_COUNT}_instance.log"
+    LOGFILE="/sysbench/results/${INSTANCE_COUNT}_instance.log"
     LOCKFILE="/sysbench/log.lock"
-
+    mkdir -p "$(dirname "$LOGFILE")"
     echo "No logfile provided. Using auto-generated logfile: $LOGFILE"
+else
+    LOGFILE="$1"
+    LOCKFILE="$(realpath ./bare_metal/log.lock)"
+    mkdir -p "$(dirname "$LOGFILE")"
 fi
+
+# Convert LOGFILE to an absolute path:
+LOGFILE="$(realpath "$LOGFILE")"
+# Ensure lock file directory exists and file is touchable
+mkdir -p "$(dirname "$LOCKFILE")"
+touch "$LOCKFILE"
 
 # 2. Setup working directory per instance
 # Determine the working directory.

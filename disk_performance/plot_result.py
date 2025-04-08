@@ -1,109 +1,131 @@
 import matplotlib.pyplot as plt
-import matplotlib.dates as mdates
-from datetime import datetime
-import csv
 import os
-
+import csv
+from datetime import datetime
+from dateutil import parser
 # Define environment types
-# ENV_TYPES = ["bare_metal", "docker", "k8s", "kind"]
-ENV_TYPES = ["bare_metal", "docker", "minikube", "kind"]
+ENV_TYPES = ["bare_metal", "docker", "minikube", "kind", "pvc-kind"]
 
-# -----------------------------------------
-# Create the Slowdown factor plot
-# -----------------------------------------
-# slowdown_file = "slowdown.log"
-# plt.figure(figsize=(8, 5))
+# Define the file names for slowdown data (relative throughput log)
+slowdown_file = "relative_throughput.log"
 
-# for env in ENV_TYPES:
-#     slowdown_path = f"./{env}/{slowdown_file}"
+# First, read the baseline throughput from bare_metal results (assumed from 1_instance.log)
+baseline_file = os.path.join("bare_metal", "results", "1_instance.log")
+try:
+    with open(baseline_file, "r") as f:
+        # Expecting a CSV line like: "345.67,2025-04-03T21:12:00Z,2025-04-03T21:12:10Z"
+        first_line = f.readline().strip()
+        baseline_parts = first_line.split(",")
+        baseline = float(baseline_parts[0])
+except Exception as e:
+    print(f"Error reading baseline throughput from {baseline_file}: {e}")
+    baseline = None
 
-#     # Lists to store data
-#     instances = []
-#     slowdown = []
+if baseline is None:
+    print("Baseline throughput is not available. Exiting.")
+    exit(1)
 
-#     try:
-#         # Read and parse the log file
-#         with open(slowdown_path, "r") as file:
-#             for line in file:
-#                 parts = line.strip().split(",")
-#                 if len(parts) == 2:
-#                     instances.append(int(parts[0].strip()))
-#                     slowdown.append(float(parts[1].strip()))
+print(f"Baseline throughput: {baseline} MiB/s")
 
-#         # Plot the data
-#         plt.plot(instances, slowdown, marker="o", linestyle="-", label=f"{env}")
+# Data dictionaries for each environment
+env_instances = {}       # { env: [instance_counts] }
+env_slowdown = {}        # { env: [slowdown_factor] }
+env_avg_throughput = {}  # { env: [average throughput] }
 
-#     except FileNotFoundError:
-#         print(f"Warning: File {slowdown_path} not found. Skipping {env}.")
-
-# # Set x-axis to logarithmic scale for uniform spacing
-# plt.xscale("log")
-
-# # Set x-ticks dynamically based on collected instances
-# if instances:
-#     plt.xticks(instances, labels=[str(i) for i in instances])
-
-# # Labels and title
-# plt.xlabel("Number of SysBench Instances")
-# plt.ylabel("Slowdown Factor")
-# plt.title("Slowdown vs. SysBench Instances")
-
-# # Grid styling
-# plt.grid(True, which="major", axis="x", linestyle="--", linewidth=0.7)  
-
-# # Show legend
-# plt.legend()
-
-# # Save the plot
-# plt.savefig("slowdown.png")
-
-
-# -----------------------------------------
-# TODO: Create the Overlap 3 Gantt chart only for 256 instances for each environment.
-# Plot 3 figures in 1 image. Place them side by side.
-# -----------------------------------------
-LOG_FILENAME = "256_instance.log"
-
-
-# Set up a horizontal layout for 4 subplots
-fig, axes = plt.subplots(1, 4, figsize=(18, 10), sharey=True)
-
-for i, env in enumerate(ENV_TYPES):
-    ax = axes[i]
-    file_path = os.path.join(env, LOG_FILENAME)
-
+for env in ENV_TYPES:
+    slowdown_path = os.path.join(env, "results", slowdown_file)
+    instances = []
+    slowdown = []
     try:
-        with open(file_path, "r") as f:
-            reader = csv.reader(f)
-            rows = list(reader)
-
-            # Get all start/end times
-            times = [
-                (datetime.strptime(row[1], "%Y-%m-%dT%H:%M:%SZ"),
-                 datetime.strptime(row[2], "%Y-%m-%dT%H:%M:%SZ"))
-                for row in rows if len(row) == 3
-            ]
-
-            if not times:
-                continue
-
-            min_start = min(start for start, _ in times)
-
-            for idx, (start, end) in enumerate(times):
-                delta_start = (start - min_start).total_seconds()
-                delta_duration = (end - start).total_seconds()
-                ax.barh(idx, delta_duration, left=delta_start, height=0.6)
-
-            ax.set_title(f"{env.replace('_', ' ').title()} (256 Instances)")
-            ax.set_xlabel("Time (s since first start)")
-            ax.grid(True)
-
+        with open(slowdown_path, "r") as file:
+            for line in file:
+                parts = line.strip().split(",")
+                if len(parts) == 2:
+                    try:
+                        instances.append(int(parts[0].strip()))
+                        slowdown.append(float(parts[1].strip()))
+                    except ValueError:
+                        continue
+        if instances:
+            env_instances[env] = instances
+            env_slowdown[env] = slowdown
+            # Compute average throughput = baseline / slowdown factor for each instance count.
+            avg_throughput = [baseline / s if s != 0 else 0 for s in slowdown]
+            env_avg_throughput[env] = avg_throughput
     except FileNotFoundError:
-        ax.set_title(f"{env.replace('_', ' ').title()} - File Not Found")
-        ax.axis("off")
+        print(f"Warning: File {slowdown_path} not found. Skipping environment {env}.")
+
+# Create subplots: left for average throughput, right for slowdown factor
+fig, axes = plt.subplots(1, 2, figsize=(14, 6))
+ax1, ax2 = axes
+
+# Plot Average Throughput vs Instances
+for env in env_instances:
+    ax1.plot(env_instances[env], env_avg_throughput[env], marker="o", linestyle="-", label=env)
+ax1.set_xscale("log")
+ax1.set_xlabel("Number of SysBench Instances")
+ax1.set_ylabel("Average Throughput (MiB/s)")
+ax1.set_title("Average Throughput vs Instances")
+ax1.grid(True, which="major", axis="x", linestyle="--", linewidth=0.7)
+ax1.legend()
+
+# Plot Slowdown Factor vs Instances
+for env in env_instances:
+    ax2.plot(env_instances[env], env_slowdown[env], marker="o", linestyle="-", label=env)
+ax2.set_xscale("log")
+ax2.set_xlabel("Number of SysBench Instances")
+ax2.set_ylabel("Slowdown Factor (Bare Metal 1 Instance / Avg Throughput)")
+ax2.set_title("Slowdown Factor vs Instances")
+ax2.grid(True, which="major", axis="x", linestyle="--", linewidth=0.7)
+ax2.legend()
+
+plt.tight_layout()
+plt.savefig("comparison.png")
+plt.close()
+
+print("Plots saved as 'comparison.png'")
+# -----------------------------------------
+# GANTT CHART for Overlap Visualization (Fixed)
+# -----------------------------------------
+gantt_envs = ["bare_metal", "docker", "minikube", "kind", "pvc-kind"]
+fig, axes = plt.subplots(1, len(gantt_envs), figsize=(22, 8), sharey=True)
+
+for i, env in enumerate(gantt_envs):
+    ax = axes[i]
+    log_dir = os.path.join(env, "results")
+    instance_times = []
+
+    target_file = os.path.join(log_dir, "256_instance.log")
+    if os.path.exists(target_file):
+        try:
+            with open(target_file, "r") as f:
+                for line_num, line in enumerate(f):
+                    parts = line.strip().split(",")
+                    if len(parts) == 3:
+                        _, start_str, end_str = parts
+                        start = int(parser.isoparse(start_str).timestamp())
+                        end = int(parser.isoparse(end_str).timestamp())
+                        instance_times.append((line_num, start, end))
+        except Exception as e:
+            print(f"Error reading 256_instance.log in {env}: {e}")
+    else:
+        print(f"No 256_instance.log found in {env}")
+        if not instance_times:
+            ax.set_title(f"{env} (no data)")
+            continue
+
+    # Normalize to first start time
+    min_start = min(start for _, start, _ in instance_times)
+    for inst_id, start, end in instance_times:
+        ax.barh(inst_id, end - start, left=start - min_start, height=0.8)
+
+    ax.set_title(f"{env.replace('_', ' ').title()} (256 Instances)")
+    ax.set_xlabel("Time (s since first start)")
+    ax.set_xlim(left=0)
+    ax.grid(True, axis='x', linestyle='--', linewidth=0.5)
 
 axes[0].set_ylabel("Instance ID")
 plt.tight_layout()
-plt.savefig("overlap.png")
-
-
+plt.savefig("overlap_gantt.png")
+plt.close()
+print("Gantt chart saved as 'overlap_gantt.png'")

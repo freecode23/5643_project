@@ -1,0 +1,31 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: ${JOB_NAME}
+spec:
+  completions: ${JOB_COMPLETIONS}
+  parallelism: ${JOB_PARALLELISM}
+  template:
+    metadata:
+      labels:
+        app: sysbench
+    spec:
+      restartPolicy: Never
+      containers:
+      - name: sysbench
+        image: sysbench-container:latest
+        imagePullPolicy: Never
+        env:
+        - name: INSTANCE_COUNT
+          value: "${INSTANCE_COUNT}"  # quotes here because env vars are always strings
+        - name: SYSBENCH_WORK_DIR
+          value: "/sysbench/results"
+        volumeMounts:
+        - mountPath: /sysbench/results
+          name: log-volume
+        command: ["/bin/bash", "-c", "/sysbench/sysbench_single.sh"]
+      volumes:
+      - name: log-volume
+        persistentVolumeClaim:
+          claimName: sysbench-pvc
+

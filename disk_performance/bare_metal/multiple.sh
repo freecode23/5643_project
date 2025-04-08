@@ -25,6 +25,10 @@ for INSTANCE_COUNT in "${INSTANCE_COUNTS[@]}"; do
     for ((i=1; i<=INSTANCE_COUNT; i++)); do
       INSTANCE_DIR="./bare_metal/tmp/instance_$i"
       mkdir -p "$INSTANCE_DIR"  
+
+      export INSTANCE_COUNT=$INSTANCE_COUNT
+      export SYSBENCH_WORK_DIR="$(realpath ./results)"
+
       ./${SYSBENCH_SCRIPT} "$LOGFILE" "$i" &  # Pass instance ID
     done
 

@@ -14,7 +14,8 @@ if [[ ! "$BASELINE_EXEC_TIME" =~ ^[0-9]+\.[0-9]+$ ]]; then
     echo "Error: Invalid baseline execution time in 1_instance.log"
     exit 1
 fi
-
+# Divide by 10 to get per-run baseline
+BASELINE_EXEC_TIME=$(echo "scale=4; $BASELINE_EXEC_TIME / 10" | bc)
 
 # -----------------------------------------
 # Calculate Slowdown and Save to RESULT_FILE for each environment.
@@ -23,7 +24,7 @@ fi
 # Make sure there is "x_instance.log" in the directories in ENV_TYPES
 ENV_TYPES=("bare_metal" "docker" "minikube" "kind")
 INSTANCE_COUNTS=(1 2 4 8 16 32 64 128 256)
-
+NUM_RUNS=10
 for ENV_TYPE in "${ENV_TYPES[@]}"; do
     # 0. Define path for the result of slowdown for each environment.
     RESULT_FILE="./${ENV_TYPE}/slowdown.log"
@@ -44,7 +45,7 @@ for ENV_TYPE in "${ENV_TYPES[@]}"; do
 
         # 2.2. Calculates the total execution time by summing all values in the first column of $LOGFILE
         TOTAL_EXEC_TIME=$(awk '{sum += $1} END {print sum}' "$LOGFILE")
-        AVERAGE_EXEC_TIME=$(echo "scale=4; $TOTAL_EXEC_TIME / $INSTANCE_COUNT" | bc)
+        AVERAGE_EXEC_TIME=$(echo "scale=4; $TOTAL_EXEC_TIME / $NUM_RUNS" | bc)
 
         # 2.3. Compute the slowdown using baseline bare metal single instance.
         SLOWDOWN=$(echo "scale=4; $BASELINE_EXEC_TIME/$AVERAGE_EXEC_TIME " | bc)

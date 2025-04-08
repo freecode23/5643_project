@@ -50,8 +50,9 @@ for env in ENV_TYPES:
             env_instances[env] = instances
             env_slowdown[env] = slowdown
             # Compute average throughput = baseline / slowdown factor for each instance count.
-            avg_throughput = [baseline / s if s != 0 else 0 for s in slowdown]
-            env_avg_throughput[env] = avg_throughput
+            env_slowdown[env] = slowdown
+            # Compute avg throughput from slowdown
+            env_avg_throughput[env] = [baseline / s if s != 0 else 0 for s in slowdown]            
     except FileNotFoundError:
         print(f"Warning: File {slowdown_path} not found. Skipping environment {env}.")
 
